@@ -77,7 +77,6 @@ public class Base64ToGallery extends CordovaPlugin {
     File retVal = null;
 
     try {
-      String deviceVersion = Build.VERSION.RELEASE;
       Calendar c           = Calendar.getInstance();
       String date          = EMPTY_STR
                               + c.get(Calendar.YEAR)
@@ -87,24 +86,18 @@ public class Base64ToGallery extends CordovaPlugin {
                               + c.get(Calendar.MINUTE)
                               + c.get(Calendar.SECOND);
 
-      int check = deviceVersion.compareTo("2.3.3");
-
       File folder;
 
-      /*
-       * File path = Environment.getExternalStoragePublicDirectory(
-       * Environment.DIRECTORY_PICTURES ); //this throws error in Android
-       * 2.2
-       */
-      if (check >= 1) {
+      if (Build.VERSION.SDK_INT >= 30) {
+        folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+      } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
         folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-
-        if (!folder.exists()) {
-          folder.mkdirs();
-        }
-
       } else {
         folder = Environment.getExternalStorageDirectory();
+      }
+      
+      if (!folder.exists()) {
+          folder.mkdirs();
       }
 
       File imageFile = new File(folder, prefix + date + ".png");
